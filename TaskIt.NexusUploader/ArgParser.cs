@@ -13,6 +13,7 @@ namespace TaskIt.NexusUploader
         {
             EExitCode ret;
             result = null;
+            
             ret = ConstructMap(args, out Dictionary<string, string> argMap);
             if (ret == EExitCode.SUCCESS)
             {
@@ -28,21 +29,35 @@ namespace TaskIt.NexusUploader
         /// <returns></returns>
         private EExitCode ConstructMap(string[] args, out Dictionary<string, string> argMap)
         {
+            argMap = null;
+            // FPL Check
+            if (args == null)
+            {
+                return EExitCode.INVALID_PARAMS;
+            }
+
+            // convert args to key and param list (odd / even)
             var values = args.Where((c, i) => i % 2 != 0).ToList();
             var keys = args.Where((c, i) => i % 2 == 0).ToList();
+
+            // check if all param keys are present
+            if (keys.Except(UploaderOptions.ParamKeys.Values).Any())
+            {
+                return EExitCode.INVALID_PARAMS;
+            }
 
             argMap = new Dictionary<string, string>();
 
             if (UploaderOptions.ParamKeys.Count != keys.Count || UploaderOptions.ParamKeys.Count != values.Count)
             {
                 return EExitCode.INVALID_PARAMS;
-                
             }
 
             for (int i = 0; i < keys.Count; i++)
             {
                 argMap.Add(keys[i], values[i]);
             }
+            
 
             return EExitCode.SUCCESS;
         }
