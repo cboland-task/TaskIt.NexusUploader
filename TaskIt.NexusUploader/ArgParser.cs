@@ -40,19 +40,20 @@ namespace TaskIt.NexusUploader
             var values = args.Where((c, i) => i % 2 != 0).ToList();
             var keys = args.Where((c, i) => i % 2 == 0).ToList();
 
-            // check if all param keys are present
-            if (keys.Except(UploaderOptions.ParamKeys.Values).Any())
-            {
-                return EExitCode.INVALID_PARAMS;
-            }
-
-            argMap = new Dictionary<string, string>();
-
+            // check number of args
             if (UploaderOptions.ParamKeys.Count != keys.Count || UploaderOptions.ParamKeys.Count != values.Count)
             {
                 return EExitCode.INVALID_PARAMS;
             }
 
+            // check if all arg keys are present
+            if (keys.Except(UploaderOptions.ParamKeys.Values).Any())
+            {
+                return EExitCode.INVALID_PARAMS;
+            }
+
+            // build dictionary
+            argMap = new Dictionary<string, string>();
             for (int i = 0; i < keys.Count; i++)
             {
                 argMap.Add(keys[i], values[i]);
