@@ -7,7 +7,7 @@ namespace TaskIt.NexusUploader
     /// <summary>
     /// 
     /// </summary>
-    class ArgParser
+    public class ArgParser
     {
         public EExitCode Parse(string[] args, out UploaderOptions result)
         {

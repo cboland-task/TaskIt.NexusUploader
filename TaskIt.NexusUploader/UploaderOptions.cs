@@ -3,7 +3,7 @@ using TaskIt.NexusUploader.Types;
 
 namespace TaskIt.NexusUploader
 {
-    class UploaderOptions
+   public class UploaderOptions
     {
         public static readonly Dictionary<ParamType, string> ParamKeys = new Dictionary<ParamType, string> {
             { ParamType.USERNAME, "-u" },

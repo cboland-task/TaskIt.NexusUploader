@@ -1,6 +1,6 @@
 ﻿namespace TaskIt.NexusUploader.Types
 {
-    enum EExitCode
+    public enum EExitCode
     {
         SUCCESS = 0,
         INVALID_PARAMS = 1,
