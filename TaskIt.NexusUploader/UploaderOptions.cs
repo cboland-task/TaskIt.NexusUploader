@@ -3,8 +3,12 @@ using TaskIt.NexusUploader.Types;
 
 namespace TaskIt.NexusUploader
 {
+    /// <summary>
+    /// holds the Parameters, needed for the tool to operate
+    /// </summary>
    public class UploaderOptions
     {
+        // Semantics to param string map
         public static readonly Dictionary<ParamType, string> ParamKeys = new Dictionary<ParamType, string> {
             { ParamType.USERNAME, "-u" },
             { ParamType.PASSWORD, "-p" },
