@@ -74,7 +74,7 @@ namespace TaskIt.NexusUploader
                 case EExitCode.SUCCESS:
                     break;
                 case EExitCode.INVALID_PARAMS:
-                    Console.WriteLine("ERROR - Invalid Parameters");
+                    Console.WriteLine(Messages.ERR_PARAMS);
                     Console.WriteLine("Expected:");
                     foreach (var item in UploaderOptions.ParamKeys)
                     {
@@ -82,11 +82,11 @@ namespace TaskIt.NexusUploader
                     }
                     break;
                 case EExitCode.INVALID_FOLDER:
-                    Console.WriteLine("ERROR - Invalid Folder");
+                    Console.WriteLine(Messages.ERR_FOLDER);
                     Console.WriteLine($"Folder does not exist: {options.SourceFolder}");
                     break;
                 case EExitCode.UPLOAD_ERROR:
-                    Console.WriteLine("ERROR - Upload Failed");
+                    Console.WriteLine(Messages.ERR_UPLOAD_FAILED);
                     break;
                 default:
                     break;

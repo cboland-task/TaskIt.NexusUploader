@@ -6,17 +6,17 @@ namespace TaskIt.NexusUploader
     /// <summary>
     /// holds the Parameters, needed for the tool to operate
     /// </summary>
-   public class UploaderOptions
+    public class UploaderOptions
     {
         // Semantics to param string map
-        public static readonly Dictionary<ParamType, string> ParamKeys = new Dictionary<ParamType, string> {
-            { ParamType.USERNAME, "-u" },
-            { ParamType.PASSWORD, "-p" },
-            { ParamType.REPO_URL, "-t" },
-            { ParamType.SOURCE, "-s" },
-            { ParamType.GROUP, "-g" },
-            { ParamType.ARTIFACT, "-a" },
-            { ParamType.VERSION, "-v" }
+        public static readonly Dictionary<EParamType, string> ParamKeys = new Dictionary<EParamType, string> {
+            { EParamType.USERNAME, "-u" },
+            { EParamType.PASSWORD, "-p" },
+            { EParamType.REPO_URL, "-t" },
+            { EParamType.SOURCE_FOLDER, "-f" },
+            { EParamType.GROUP, "-g" },
+            { EParamType.ARTIFACT, "-a" },
+            { EParamType.VERSION, "-v" }
         };
         public string Username { get; set; }
         public string Password { get; set; }

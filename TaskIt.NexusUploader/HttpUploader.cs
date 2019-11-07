@@ -79,7 +79,7 @@ namespace TaskIt.NexusUploader
                     {
                         SetContentType(request, item);
 
-                        using (var response = await client.SendAsync(request))
+                        using (var response = await client.SendAsync(request).ConfigureAwait(false))
                         {
                             if (response.IsSuccessStatusCode)
                             {
@@ -122,11 +122,11 @@ namespace TaskIt.NexusUploader
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, url))
                     {
 
-                        await client.SendAsync(request);
+                        await client.SendAsync(request).ConfigureAwait(false);
                     }
                 }
             }
-            Console.WriteLine("Finished Removing Files");
+            Console.WriteLine(Messages.MSG_ROLLBACK_FINISH);
             return ret;
         }
 

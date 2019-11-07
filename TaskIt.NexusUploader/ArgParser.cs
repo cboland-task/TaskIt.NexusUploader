@@ -13,7 +13,7 @@ namespace TaskIt.NexusUploader
         {
             EExitCode ret;
             result = null;
-            
+
             ret = ConstructMap(args, out Dictionary<string, string> argMap);
             if (ret == EExitCode.SUCCESS)
             {
@@ -58,7 +58,7 @@ namespace TaskIt.NexusUploader
             {
                 argMap.Add(keys[i], values[i]);
             }
-            
+
 
             return EExitCode.SUCCESS;
         }
@@ -72,13 +72,13 @@ namespace TaskIt.NexusUploader
         {
             UploaderOptions ret = new UploaderOptions()
             {
-                ArtifactId = source[UploaderOptions.ParamKeys[ParamType.ARTIFACT]],
-                GroupId = source[UploaderOptions.ParamKeys[ParamType.GROUP]],
-                Password = source[UploaderOptions.ParamKeys[ParamType.PASSWORD]],
-                RepositoryUrl = source[UploaderOptions.ParamKeys[ParamType.REPO_URL]],
-                Revision = source[UploaderOptions.ParamKeys[ParamType.VERSION]],
-                SourceFolder = source[UploaderOptions.ParamKeys[ParamType.SOURCE]],
-                Username = source[UploaderOptions.ParamKeys[ParamType.USERNAME]]
+                ArtifactId = source[UploaderOptions.ParamKeys[EParamType.ARTIFACT]],
+                GroupId = source[UploaderOptions.ParamKeys[EParamType.GROUP]],
+                Password = source[UploaderOptions.ParamKeys[EParamType.PASSWORD]],
+                RepositoryUrl = source[UploaderOptions.ParamKeys[EParamType.REPO_URL]],
+                Revision = source[UploaderOptions.ParamKeys[EParamType.VERSION]],
+                SourceFolder = source[UploaderOptions.ParamKeys[EParamType.SOURCE_FOLDER]],
+                Username = source[UploaderOptions.ParamKeys[EParamType.USERNAME]]
             };
 
             return ret;

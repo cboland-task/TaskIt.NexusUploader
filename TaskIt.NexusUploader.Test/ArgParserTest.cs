@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -26,26 +25,26 @@ namespace TaskIt.NexusUploader.Test
 
         public static IEnumerable<object[]> GetValidArgs =>
         new List<object[]>
-        {            
+        {
             new object[] {
                 new string[] {
-                    UploaderOptions.ParamKeys[Types.ParamType.ARTIFACT], "v1",
-                    UploaderOptions.ParamKeys[Types.ParamType.GROUP], "v2",
-                    UploaderOptions.ParamKeys[Types.ParamType.PASSWORD], "v3",
-                    UploaderOptions.ParamKeys[Types.ParamType.REPO_URL], "v4",
-                    UploaderOptions.ParamKeys[Types.ParamType.VERSION], "v5",
-                    UploaderOptions.ParamKeys[Types.ParamType.SOURCE], "v6",
-                    UploaderOptions.ParamKeys[Types.ParamType.USERNAME], "v7" } },
+                    UploaderOptions.ParamKeys[Types.EParamType.ARTIFACT], "v1",
+                    UploaderOptions.ParamKeys[Types.EParamType.GROUP], "v2",
+                    UploaderOptions.ParamKeys[Types.EParamType.PASSWORD], "v3",
+                    UploaderOptions.ParamKeys[Types.EParamType.REPO_URL], "v4",
+                    UploaderOptions.ParamKeys[Types.EParamType.VERSION], "v5",
+                    UploaderOptions.ParamKeys[Types.EParamType.SOURCE_FOLDER], "v6",
+                    UploaderOptions.ParamKeys[Types.EParamType.USERNAME], "v7" } },
         };
 
         /// <summary>
         /// Unit Test
         /// </summary>
         [Theory]
-        [InlineData(null)]        
+        [InlineData(null)]
         [MemberData(nameof(GetInvalidArgs))]
         public void TestInvalidParameters(string[] args)
-        {            
+        {
             var testResult = _testCandidate.Parse(args, out var options);
 
             Assert.True(testResult == Types.EExitCode.INVALID_PARAMS, "Wrong Exit Code");

@@ -1,12 +1,12 @@
 ﻿namespace TaskIt.NexusUploader.Types
 
 {
-    public enum ParamType
+    public enum EParamType
     {
         USERNAME,
         PASSWORD,
         REPO_URL,
-        SOURCE,
+        SOURCE_FOLDER,
         ARTIFACT,
         GROUP,
         VERSION

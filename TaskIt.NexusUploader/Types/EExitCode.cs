@@ -1,5 +1,8 @@
-﻿namespace TaskIt.NexusUploader.Types
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace TaskIt.NexusUploader.Types
 {
+    [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "<Pending>")]
     public enum EExitCode
     {
         SUCCESS = 0,
