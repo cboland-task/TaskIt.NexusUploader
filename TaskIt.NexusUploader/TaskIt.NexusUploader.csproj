@@ -13,6 +13,7 @@ Allows you to upload dirctories with subdirectories to the Repository.</Descript
     <Company>Task Gmbh &amp; Co KG</Company>
     <Copyright>2019 Task GmbH &amp; Co KG</Copyright>
     <PackageTags>Sonatype Nexus Upload Task TaskIt dotnet tool</PackageTags>
+	<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
