@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TaskIt.NexusUploader.Options;
 using TaskIt.NexusUploader.Types;
 
 namespace TaskIt.NexusUploader
@@ -31,21 +32,28 @@ namespace TaskIt.NexusUploader
         /// <summary>
         /// Initialisiert den HTTP Client
         /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        private HttpClient InitHttpClient(ref EExitCode result)
+        /// <param name="result"></param>
+        /// <returns>HttpClient</returns>
+        private HttpClient InitHttpClient(out Result result)
         {
-            result = EExitCode.SUCCESS;
-            HttpClient ret = new HttpClient
+            result = null;
+            HttpClient ret = null;
+            try
             {
-                BaseAddress = new Uri(_options.RepositoryUrl + _options.GroupId + URL_DELIMETER + _options.ArtifactId + URL_DELIMETER + _options.Revision + URL_DELIMETER)
-            };
+                ret = new HttpClient
+                {
+                    BaseAddress = new Uri(_options.RepositoryUrl + _options.GroupId + URL_DELIMETER + _options.ArtifactId + URL_DELIMETER + _options.Revision + URL_DELIMETER)
+                };
 
-            string authparam = _options.Username + ":" + _options.Password;
-            byte[] bytes = Encoding.UTF8.GetBytes(authparam);
-            var base64String = Convert.ToBase64String(bytes);
-            ret.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", base64String);
-
+                string authparam = _options.Username + ":" + _options.Password;
+                byte[] bytes = Encoding.UTF8.GetBytes(authparam);
+                var base64String = Convert.ToBase64String(bytes);
+                ret.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", base64String);
+            }
+            catch (Exception)
+            {
+                result = new Result(EExitCode.INVALID_PARAMS, $"Check {_options.RepositoryUrl} and {_options.GroupId } and {_options.ArtifactId} and {_options.Revision} ");
+            }
             return ret;
         }
 
@@ -53,18 +61,18 @@ namespace TaskIt.NexusUploader
         /// uploads all files
         /// </summary>        
         /// <param name="filePaths"></param>
-        public async Task<EExitCode> UploadAsync(string[] filePaths)
+        public async Task<Result> UploadAsync(string[] filePaths)
         {
-            EExitCode ret = EExitCode.SUCCESS;
-            using (var client = InitHttpClient(ref ret))
+            Result ret = null;
+            // init and use http client
+            using (var client = InitHttpClient(out ret))
             {
-                if (ret != EExitCode.SUCCESS)
+                if (ret != null)
                 {
-                    return EExitCode.UPLOAD_ERROR;
+                    ret.Code = EExitCode.UPLOAD_ERROR;
+                    return ret;
                 }
-                Console.WriteLine(Messages.MSG_UPLOAD);
                 int errorCount = 0;
-
                 foreach (var item in filePaths)
                 {
                     byte[] fileContent = File.ReadAllBytes(item);
@@ -87,8 +95,8 @@ namespace TaskIt.NexusUploader
                             }
                             else
                             {
-                                Console.WriteLine(Messages.MSG_UPLOAD_ERROR + response.ReasonPhrase);
-                                ret = EExitCode.UPLOAD_ERROR;
+                                ret = new Result(EExitCode.UPLOAD_ERROR, response.ReasonPhrase);
+                                Console.WriteLine(ret.ToString());
                                 errorCount++;
                             }
                         }
@@ -103,15 +111,15 @@ namespace TaskIt.NexusUploader
         /// uploads all files
         /// </summary>        
         /// <param name="filePaths"></param>
-        public async Task<EExitCode> RemoveAsync(string[] filePaths)
+        public async Task<Result> RemoveAsync(string[] filePaths)
         {
-            EExitCode ret = EExitCode.SUCCESS;
+            Result ret = null;
 
-            using (var client = InitHttpClient(ref ret))
+            using (var client = InitHttpClient(out ret))
             {
-                if (ret != EExitCode.SUCCESS)
+                if (ret != null)
                 {
-                    return EExitCode.UPLOAD_ERROR;
+                    return ret;
                 }
                 Console.WriteLine(Messages.MSG_ROLLBACK);
                 foreach (var item in filePaths)
@@ -150,7 +158,7 @@ namespace TaskIt.NexusUploader
         /// <returns></returns>
         private Uri ConstructUrl(string filename, HttpClient client)
         {
-            String relativePath = filename.Replace(_options.SourceFolder, "").Replace(" ", "").Replace("//", "");
+            var relativePath = filename.Replace(_options.SourceFolder, "").Replace(" ", "").Replace("//", "");
             return new Uri(client.BaseAddress.ToString() + relativePath);
         }
     }
