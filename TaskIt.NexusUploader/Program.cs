@@ -94,7 +94,7 @@ namespace TaskIt.NexusUploader
             {
                 filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 result = new Result(EExitCode.INVALID_FOLDER, path);
             }
