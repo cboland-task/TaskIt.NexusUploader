@@ -1,0 +1,1 @@
+C:\Data\Jenkins\workspace\TaskIt.NexusUploader\MRP_TaskIt.NexusUploader\.sonarqube\out\0
