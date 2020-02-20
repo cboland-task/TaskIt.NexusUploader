@@ -42,7 +42,7 @@ namespace TaskIt.NexusUploader
             {
                 ret = new HttpClient
                 {
-                    BaseAddress = new Uri(_options.RepositoryUrl + _options.GroupId + URL_DELIMETER + _options.ArtifactId + URL_DELIMETER + _options.Revision + URL_DELIMETER)
+                    BaseAddress = new Uri(_options.RepositoryUrl + _options.GroupId + URL_DELIMETER + _options.ArtifactId + URL_DELIMETER + _options.Revision)
                 };
 
                 string authparam = _options.Username + ":" + _options.Password;
