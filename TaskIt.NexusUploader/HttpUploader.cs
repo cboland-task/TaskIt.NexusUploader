@@ -8,6 +8,10 @@ using TaskIt.NexusUploader.Types;
 
 namespace TaskIt.NexusUploader
 {
+    /// <summary>
+    /// Utility / Wrapper for the Upload funktions.<br/>
+    /// Uses a HttpClinet as delegate
+    /// </summary>
     public class HttpUploader
     {
         /// <summary>
@@ -18,12 +22,12 @@ namespace TaskIt.NexusUploader
         /// <summary>
         /// Uploader options
         /// </summary>
-        private UploaderOptions _options;
+        private readonly UploaderOptions _options;
 
         /// <summary>
         /// Http client - delgate
         /// </summary>
-        private HttpClient _httpCLient;
+        private readonly HttpClient _httpCLient;
 
         /// <summary>
         /// Konstruktor
