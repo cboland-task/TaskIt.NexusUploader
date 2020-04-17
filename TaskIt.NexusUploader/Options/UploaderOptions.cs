@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using System;
 
 namespace TaskIt.NexusUploader.Options
 
@@ -30,7 +31,7 @@ namespace TaskIt.NexusUploader.Options
         /// Source / root folder
         /// </summary>
         [Option('f', "folder", Required = false, HelpText = "local root folder to be uploaded")]
-        public string SourceFolder { get; set; } = null;
+        public string SourceFolder { get; set; } = Environment.CurrentDirectory;
 
         /// <summary>
         /// Artefact group id

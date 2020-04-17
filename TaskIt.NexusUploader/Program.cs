@@ -1,13 +1,12 @@
 ﻿using CommandLine;
 using System;
-using System.IO;
 using System.Reflection;
 using TaskIt.NexusUploader.Options;
 using TaskIt.NexusUploader.Types;
 
 namespace TaskIt.NexusUploader
 {
-    class Program
+    public class Program
     {
         /// <summary>
         /// Constructor
@@ -37,7 +36,7 @@ namespace TaskIt.NexusUploader
             // parse args           
             var ret = Parser.Default.ParseArguments<UploaderOptions>(args).MapResult(
                 (UploaderOptions opts) => PerformAction(opts),
-                errs => new Result(EExitCode.SUCCESS, ""));
+                errs => new Result(EExitCode.INVALID_PARAMS, ""));
 
             if (ret != null && ret.Code != EExitCode.SUCCESS)
             {
@@ -57,18 +56,29 @@ namespace TaskIt.NexusUploader
         private static Result PerformAction(UploaderOptions options)
         {
             // filenamen lesen
-            var filePaths = GetFilePaths(options.SourceFolder, out var ret);
+            var filePaths = Filehelper.GetFilePaths(options.SourceFolder, out var ret);
             if (ret != null)
             {
                 return ret;
             }
 
             // http client initialisieren
-            var uploader = new HttpUploader(options);
+            HttpUploader uploader;
+            try
+            {
+                uploader = new HttpUploader(options);
+            }
+            catch (Exception)
+            {
+                ret = new Result(EExitCode.INVALID_PARAMS, $"Check {options.RepositoryUrl} and {options.GroupId } and {options.ArtifactId} and {options.Revision} ");
+                return ret;
+            }
+
             // upload
             ret = uploader.UploadAsync(filePaths).GetAwaiter().GetResult();
             if (ret != null)
             {
+                // remove uploaded files
                 ret = uploader.RemoveAsync(filePaths).GetAwaiter().GetResult();
             }
             return ret;
@@ -76,30 +86,6 @@ namespace TaskIt.NexusUploader
 
 
 
-        /// <summary>
-        /// gets all file pathes
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        static string[] GetFilePaths(string path, out Result result)
-        {
-            result = null;
-            if (string.IsNullOrEmpty(path))
-            {
-                path = Environment.CurrentDirectory;
-            }
-            string[] filePaths = null;
-            try
-            {
-                filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
-            }
-            catch (Exception)
-            {
-                result = new Result(EExitCode.INVALID_FOLDER, path);
-            }
 
-            return filePaths;
-        }
     }
 }

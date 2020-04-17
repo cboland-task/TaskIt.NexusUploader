@@ -8,7 +8,7 @@ using TaskIt.NexusUploader.Types;
 
 namespace TaskIt.NexusUploader
 {
-    class HttpUploader
+    public class HttpUploader
     {
         /// <summary>
         /// Trenner fuer den Bau von URLs
@@ -16,9 +16,14 @@ namespace TaskIt.NexusUploader
         private const string URL_DELIMETER = "/";
 
         /// <summary>
-        /// needet informations
+        /// Uploader options
         /// </summary>
-        private readonly UploaderOptions _options;
+        private UploaderOptions _options;
+
+        /// <summary>
+        /// Http client - delgate
+        /// </summary>
+        private HttpClient _httpCLient;
 
         /// <summary>
         /// Konstruktor
@@ -27,33 +32,27 @@ namespace TaskIt.NexusUploader
         public HttpUploader(UploaderOptions options)
         {
             _options = options;
+            _httpCLient = InitHttpClient(_options);
         }
 
         /// <summary>
         /// Initialisiert den HTTP Client
         /// </summary>
-        /// <param name="result"></param>
+        /// <param name="options"></param>
         /// <returns>HttpClient</returns>
-        private HttpClient InitHttpClient(out Result result)
+        private HttpClient InitHttpClient(UploaderOptions options)
         {
-            result = null;
             HttpClient ret = null;
-            try
+            ret = new HttpClient
             {
-                ret = new HttpClient
-                {
-                    BaseAddress = new Uri(_options.RepositoryUrl + _options.GroupId + URL_DELIMETER + _options.ArtifactId + URL_DELIMETER + _options.Revision)
-                };
+                BaseAddress = new Uri(options.RepositoryUrl + options.GroupId + URL_DELIMETER + options.ArtifactId + URL_DELIMETER + options.Revision)
+            };
 
-                string authparam = _options.Username + ":" + _options.Password;
-                byte[] bytes = Encoding.UTF8.GetBytes(authparam);
-                var base64String = Convert.ToBase64String(bytes);
-                ret.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", base64String);
-            }
-            catch (Exception)
-            {
-                result = new Result(EExitCode.INVALID_PARAMS, $"Check {_options.RepositoryUrl} and {_options.GroupId } and {_options.ArtifactId} and {_options.Revision} ");
-            }
+            string authparam = options.Username + ":" + options.Password;
+            byte[] bytes = Encoding.UTF8.GetBytes(authparam);
+            var base64String = Convert.ToBase64String(bytes);
+            ret.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", base64String);
+
             return ret;
         }
 
@@ -64,30 +63,25 @@ namespace TaskIt.NexusUploader
         public async Task<Result> UploadAsync(string[] filePaths)
         {
             Result ret = null;
-            // init and use http client
-            using (var client = InitHttpClient(out ret))
+            filePaths = filePaths ?? Array.Empty<string>();
+
+            int errorCount = 0;
+            foreach (var item in filePaths)
             {
-                if (ret != null)
-                {
-                    ret.Code = EExitCode.UPLOAD_ERROR;
-                    return ret;
-                }
-                int errorCount = 0;
-                foreach (var item in filePaths)
-                {
-                    byte[] fileContent = File.ReadAllBytes(item);
-                    var url = ConstructUrl(item, client);
-                    Console.Write($"Pushing: {item} --> {url.ToString()}");
+                byte[] fileContent = File.ReadAllBytes(item);
+                var url = ConstructUrl(item);
+                Console.Write($"Pushing: {item} --> {url.ToString()}");
 
-                    using (
-                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, url)
+                using (
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, url)
+                {
+                    Content = new ByteArrayContent(fileContent)
+                })
+                {
+                    SetContentType(request, item);
+                    try
                     {
-                        Content = new ByteArrayContent(fileContent)
-                    })
-                    {
-                        SetContentType(request, item);
-
-                        using (var response = await client.SendAsync(request).ConfigureAwait(false))
+                        using (var response = await _httpCLient.SendAsync(request).ConfigureAwait(false))
                         {
                             if (response.IsSuccessStatusCode)
                             {
@@ -101,9 +95,16 @@ namespace TaskIt.NexusUploader
                             }
                         }
                     }
+                    catch (Exception e)
+                    {
+                        ret = new Result(EExitCode.UPLOAD_ERROR, e.Message);
+                        Console.WriteLine(ret.ToString());
+                        errorCount++;
+                    }
                 }
-                Console.WriteLine($"Finished Uploading {filePaths.Length} Files with {errorCount} Errors");
             }
+            Console.WriteLine($"Finished Uploading {filePaths.Length} Files with {errorCount} Errors");
+
             return ret;
         }
 
@@ -114,26 +115,21 @@ namespace TaskIt.NexusUploader
         public async Task<Result> RemoveAsync(string[] filePaths)
         {
             Result ret = null;
+            filePaths = filePaths ?? Array.Empty<string>();
 
-            using (var client = InitHttpClient(out ret))
+            Console.WriteLine(Messages.MSG_ROLLBACK);
+            foreach (var item in filePaths)
             {
-                if (ret != null)
+                var url = ConstructUrl(item);
+                Console.WriteLine($"Removing: {url.ToString()}");
+                using (
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, url))
                 {
-                    return ret;
-                }
-                Console.WriteLine(Messages.MSG_ROLLBACK);
-                foreach (var item in filePaths)
-                {
-                    var url = ConstructUrl(item, client);
-                    Console.WriteLine($"Removing: {url.ToString()}");
-                    using (
-                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, url))
-                    {
 
-                        await client.SendAsync(request).ConfigureAwait(false);
-                    }
+                    await _httpCLient.SendAsync(request).ConfigureAwait(false);
                 }
             }
+
             Console.WriteLine(Messages.MSG_ROLLBACK_FINISH);
             return ret;
         }
@@ -153,13 +149,14 @@ namespace TaskIt.NexusUploader
         /// <summary>
         /// generiert die Ziel URL
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="client"></param>
+        /// <param name="filename"></param>       
         /// <returns></returns>
-        private Uri ConstructUrl(string filename, HttpClient client)
+        public Uri ConstructUrl(string filename)
         {
-            var relativePath = filename.Replace(_options.SourceFolder, "").Replace(" ", "").Replace("//", "");
-            return new Uri(client.BaseAddress.ToString() + relativePath);
+            var relativePath = filename.Replace(_options.SourceFolder, "").Replace("\\", "/").Replace("//", "/");
+            relativePath = Uri.EscapeUriString(relativePath);
+            var result = new Uri(_httpCLient.BaseAddress.ToString() + relativePath);
+            return result;
         }
     }
 }
