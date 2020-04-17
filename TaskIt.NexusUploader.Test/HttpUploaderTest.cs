@@ -41,7 +41,6 @@ namespace TaskIt.NexusUploader.Test
         {
             // init Test            
             systemUnderTest = new HttpUploader(sourceOptions);
-
             var sourceFiles = Filehelper.GetFilePaths(sourceOptions.SourceFolder, out var resultMessage);
 
             // perform action
@@ -49,6 +48,20 @@ namespace TaskIt.NexusUploader.Test
 
             // check result
             Assert.True(result.Code == Types.EExitCode.UPLOAD_ERROR, "Unexpected Upload Success");
+        }
+
+        /// <summary>
+        /// Unit test for <see cref="HttpUploader.UploadAsync(string[])"/>
+        /// </summary>
+        [Fact]
+        public void TestUploadAsyncUrlNotFound()
+        {
+            sourceOptions.RepositoryUrl = "http://www.bing.de";
+            systemUnderTest = new HttpUploader(sourceOptions);
+            var sourceFiles = Filehelper.GetFilePaths(sourceOptions.SourceFolder, out var resultMessage);
+
+            var result = systemUnderTest.UploadAsync(sourceFiles).GetAwaiter().GetResult();
+            Assert.True(result.Code == Types.EExitCode.UPLOAD_ERROR, "Unexpected Result Code");
         }
 
         /// <summary>
