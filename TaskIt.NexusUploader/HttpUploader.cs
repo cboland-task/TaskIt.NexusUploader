@@ -35,7 +35,7 @@ namespace TaskIt.NexusUploader
         /// <param name="options"></param>
         public HttpUploader(UploaderOptions options)
         {
-            _options = options;
+            _options = options ?? throw new ArgumentNullException(nameof(options));
             _httpCLient = InitHttpClient(_options);
         }
 

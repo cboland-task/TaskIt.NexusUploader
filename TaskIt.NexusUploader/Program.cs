@@ -6,6 +6,9 @@ using TaskIt.NexusUploader.Types;
 
 namespace TaskIt.NexusUploader
 {
+    /// <summary>
+    /// Main Class
+    /// </summary>
     public class Program
     {
         /// <summary>

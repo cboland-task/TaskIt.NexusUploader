@@ -11,14 +11,22 @@ namespace TaskIt.NexusUploader.Test
 
 
         /// <summary>
-        /// Unit test for <see cref="HttpUploader.UploadAsync(string[])"/>
+        /// Unit test for the construction of <see cref="HttpUploader"/>
         /// </summary>
         [Fact]
         public void TestConstruction()
         {
+            Assert.Throws<ArgumentNullException>(() => new HttpUploader(null));
+        }
+
+        /// <summary>
+        /// Unit test for the construction of <see cref="HttpUploader"/>
+        /// </summary>
+        [Fact]
+        public void TestConstructionEmpty()
+        {
             sourceOptions = new UploaderOptions();
             Assert.Throws<UriFormatException>(() => new HttpUploader(sourceOptions));
-
         }
 
         /// <summary>
