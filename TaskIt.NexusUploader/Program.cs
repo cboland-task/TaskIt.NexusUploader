@@ -33,9 +33,8 @@ namespace TaskIt.NexusUploader
                                         .ToString();
 
             Console.WriteLine($"NexusUploader {versionString} start...");
-            var ret = new Result(EExitCode.SUCCESS, "");
             // parse args           
-            ret = Parser.Default.ParseArguments<UploaderOptions>(args).MapResult(
+            var ret = Parser.Default.ParseArguments<UploaderOptions>(args).MapResult(
                 (UploaderOptions opts) => PerformAction(opts),
                 errs => new Result(EExitCode.PARAM_PARSING_ERROR, ""));
 
@@ -81,7 +80,8 @@ namespace TaskIt.NexusUploader
                 // remove uploaded files
                 ret = uploader.RemoveAsync(filePaths).GetAwaiter().GetResult();
             }
-            return ret;
+
+            return ret ?? new Result(EExitCode.SUCCESS, "");
         }
 
 
