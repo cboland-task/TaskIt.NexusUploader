@@ -25,30 +25,27 @@ namespace TaskIt.NexusUploader
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        static int Main(string[] args)
+        static public int Main(string[] args)
         {
-            int exitCode = (int)EExitCode.SUCCESS;
-
             var versionString = Assembly.GetEntryAssembly()
                                         .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
                                         .InformationalVersion
                                         .ToString();
 
             Console.WriteLine($"NexusUploader {versionString} start...");
-
+            var ret = new Result(EExitCode.SUCCESS, "");
             // parse args           
-            var ret = Parser.Default.ParseArguments<UploaderOptions>(args).MapResult(
+            ret = Parser.Default.ParseArguments<UploaderOptions>(args).MapResult(
                 (UploaderOptions opts) => PerformAction(opts),
-                errs => new Result(EExitCode.INVALID_PARAMS, ""));
+                errs => new Result(EExitCode.PARAM_PARSING_ERROR, ""));
 
-            if (ret != null && ret.Code != EExitCode.SUCCESS)
+            if (!string.IsNullOrEmpty(ret.Message))
             {
-                Console.WriteLine($"ERROR: {ret.ToString()}");
-                exitCode = (int)ret.Code;
+                Console.WriteLine($"ERROR: {ret}");
             }
 
             Console.WriteLine($"NexusUploader {versionString} finished");
-            return exitCode;
+            return (int)ret.Code;
         }
 
         /// <summary>

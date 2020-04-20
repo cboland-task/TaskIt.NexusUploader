@@ -14,18 +14,23 @@ namespace TaskIt.NexusUploader.Types
         SUCCESS = 0,
 
         /// <summary>
+        /// Param Parsing error
+        /// </summary>
+        PARAM_PARSING_ERROR = 1,
+
+        /// <summary>
         /// illegal parameters
         /// </summary>
-        INVALID_PARAMS = 1,
+        INVALID_PARAMS = 2,
 
         /// <summary>
         /// illegal folder
         /// </summary>
-        INVALID_FOLDER = 2,
+        INVALID_FOLDER = 3,
 
         /// <summary>
         /// Error during upload
         /// </summary>
-        UPLOAD_ERROR = 3
+        UPLOAD_ERROR = 4
     }
 }

@@ -69,7 +69,7 @@ namespace TaskIt.NexusUploader.Test
             var sourceFiles = Filehelper.GetFilePaths(sourceOptions.SourceFolder, out var resultMessage);
 
             var result = systemUnderTest.UploadAsync(sourceFiles).GetAwaiter().GetResult();
-            Assert.True(result.Code == Types.EExitCode.UPLOAD_ERROR, "Unexpected Result Code");
+            Assert.Equal(Types.EExitCode.INVALID_PARAMS, result.Code);
         }
 
         /// <summary>

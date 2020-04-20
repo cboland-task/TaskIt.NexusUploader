@@ -101,7 +101,7 @@ namespace TaskIt.NexusUploader
                     }
                     catch (Exception e)
                     {
-                        ret = new Result(EExitCode.UPLOAD_ERROR, e.Message);
+                        ret = new Result(EExitCode.INVALID_PARAMS, e.Message);
                         Console.WriteLine(ret.ToString());
                         errorCount++;
                     }
@@ -129,8 +129,15 @@ namespace TaskIt.NexusUploader
                 using (
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, url))
                 {
-
-                    await _httpCLient.SendAsync(request).ConfigureAwait(false);
+                    try
+                    {
+                        await _httpCLient.SendAsync(request).ConfigureAwait(false);
+                    }
+                    catch (Exception e)
+                    {
+                        ret = new Result(EExitCode.INVALID_PARAMS, e.Message);
+                        Console.WriteLine(ret.ToString());
+                    }
                 }
             }
 
