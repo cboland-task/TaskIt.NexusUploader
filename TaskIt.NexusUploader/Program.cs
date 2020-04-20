@@ -9,7 +9,7 @@ namespace TaskIt.NexusUploader
     /// <summary>
     /// Main Class
     /// </summary>
-    public class Program
+    public sealed class Program
     {
         /// <summary>
         /// Constructor
