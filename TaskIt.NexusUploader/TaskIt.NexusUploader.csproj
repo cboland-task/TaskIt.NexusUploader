@@ -3,18 +3,22 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Version>1.0.1</Version>
     <!-- for tool publishing -->
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>NexusUploader</ToolCommandName>
-    <PackageOutputPath>../nupkg</PackageOutputPath>
+    <ToolCommandName>NexusUploader</ToolCommandName>    
     <!-- -->
-    <Version>1.0.1</Version>
-    <Description>Simple Upload Tool for Sontype Nexus Repository Manager.
-Allows you to upload dirctories with subdirectories to the Repository.</Description>
+    <!-- for packaging - nuget -->
     <Company>Task Gmbh &amp; Co KG</Company>
-    <Copyright>2019 Task GmbH &amp; Co KG</Copyright>
-    <PackageTags>Sonatype Nexus Upload Task TaskIt dotnet tool</PackageTags>
-	<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <Description>Simple Upload Tool for Sontype Nexus Repository Manager.
+Allows you to upload dirctories with subdirectories to the Repository.</Description>    
+    <Copyright>2020</Copyright>
+    <PackageTags>sonatype nexus upload task taskIt dotnet tool</PackageTags>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <RepositoryUrl></RepositoryUrl>
+    <!-- documentation -->
+	  <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
