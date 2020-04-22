@@ -1,11 +1,15 @@
-﻿using System;
-using System.IO;
+﻿using CommandLine;
+using System;
 using System.Reflection;
+using TaskIt.NexusUploader.Options;
 using TaskIt.NexusUploader.Types;
 
 namespace TaskIt.NexusUploader
 {
-    class Program
+    /// <summary>
+    /// Main Class
+    /// </summary>
+    public sealed class Program
     {
         /// <summary>
         /// Constructor
@@ -21,7 +25,7 @@ namespace TaskIt.NexusUploader
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        static int Main(string[] args)
+        static public int Main(string[] args)
         {
             var versionString = Assembly.GetEntryAssembly()
                                         .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
@@ -29,90 +33,59 @@ namespace TaskIt.NexusUploader
                                         .ToString();
 
             Console.WriteLine($"NexusUploader {versionString} start...");
+            // parse args           
+            var ret = Parser.Default.ParseArguments<UploaderOptions>(args).MapResult(
+                (UploaderOptions opts) => PerformAction(opts),
+                errs => new Result(EExitCode.PARAM_PARSING_ERROR, ""));
 
-            // Parameter parsen
-            var ret = new ArgParser().Parse(args, out UploaderOptions options);
-            if (ret != EExitCode.SUCCESS)
+            if (!string.IsNullOrEmpty(ret.Message))
             {
-                PrintErrors(ret, options);
-                return (int)ret;
+                Console.WriteLine($"ERROR: {ret}");
             }
 
+            Console.WriteLine($"NexusUploader {versionString} finished");
+            return (int)ret.Code;
+        }
+
+        /// <summary>
+        /// performs the real action
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        private static Result PerformAction(UploaderOptions options)
+        {
             // filenamen lesen
-            var filePaths = GetFilePaths(options.SourceFolder, ref ret);
-            if (ret != EExitCode.SUCCESS)
+            var filePaths = Filehelper.GetFilePaths(options.SourceFolder, out var ret);
+            if (ret != null)
             {
-                PrintErrors(ret, options);
-                return (int)ret;
+                return ret;
             }
 
             // http client initialisieren
-            var uploader = new HttpUploader(options);
-            // upload
-            ret = uploader.UploadAsync(filePaths).GetAwaiter().GetResult();
-            if (ret != EExitCode.SUCCESS)
-            {
-                ret = uploader.RemoveAsync(filePaths).GetAwaiter().GetResult();
-            }
-            PrintErrors(ret, options);
-
-            Console.WriteLine($"NexusUploader {versionString} finished");
-            return (int)ret;
-        }
-
-
-
-        /// <summary>
-        /// Error ausgabe
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="options"></param>
-        static void PrintErrors(EExitCode source, UploaderOptions options)
-        {
-            switch (source)
-            {
-                case EExitCode.SUCCESS:
-                    break;
-                case EExitCode.INVALID_PARAMS:
-                    Console.WriteLine("ERROR - Invalid Parameters");
-                    Console.WriteLine("Expected:");
-                    foreach (var item in UploaderOptions.ParamKeys)
-                    {
-                        Console.WriteLine($"{item.Value} : {item.Key.ToString()}");
-                    }
-                    break;
-                case EExitCode.INVALID_FOLDER:
-                    Console.WriteLine("ERROR - Invalid Folder");
-                    Console.WriteLine($"Folder does not exist: {options.SourceFolder}");
-                    break;
-                case EExitCode.UPLOAD_ERROR:
-                    Console.WriteLine("ERROR - Upload Failed");
-                    break;
-                default:
-                    break;
-            }
-        }
-        /// <summary>
-        /// gets all file pathes
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        static string[] GetFilePaths(string path, ref EExitCode result)
-        {
-            result = EExitCode.SUCCESS;
-            string[] filePaths = null;
+            HttpUploader uploader;
             try
             {
-                filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+                uploader = new HttpUploader(options);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e.ToString());
-                result = EExitCode.INVALID_FOLDER;
+                ret = new Result(EExitCode.INVALID_PARAMS, $"Check {options.RepositoryUrl} and {options.GroupId } and {options.ArtifactId} and {options.Revision} ");
+                return ret;
             }
 
-            return filePaths;
+            // upload
+            ret = uploader.UploadAsync(filePaths).GetAwaiter().GetResult();
+            if (ret != null)
+            {
+                // remove uploaded files
+                ret = uploader.RemoveAsync(filePaths).GetAwaiter().GetResult();
+            }
+
+            return ret ?? new Result(EExitCode.SUCCESS, "");
         }
+
+
+
+
     }
 }

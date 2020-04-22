@@ -338,3 +338,11 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+nupkg/
+
+# Sonar
+*.ruleset
+*.slconfig
+.sonarlint
+.sonarqube
