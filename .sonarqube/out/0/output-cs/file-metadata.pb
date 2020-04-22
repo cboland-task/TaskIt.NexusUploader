@@ -1,9 +1,0 @@
-u
-lC:\Data\Jenkins\workspace\TaskIt.NexusUploader\MRP_TaskIt.NexusUploader\TaskIt.NexusUploader\HttpUploader.csutf-8€
-wC:\Data\Jenkins\workspace\TaskIt.NexusUploader\MRP_TaskIt.NexusUploader\TaskIt.NexusUploader\Options\UploaderOptions.csutf-8p
-gC:\Data\Jenkins\workspace\TaskIt.NexusUploader\MRP_TaskIt.NexusUploader\TaskIt.NexusUploader\Program.csutf-8x
-oC:\Data\Jenkins\workspace\TaskIt.NexusUploader\MRP_TaskIt.NexusUploader\TaskIt.NexusUploader\Types\EExitCode.csutf-8w
-nC:\Data\Jenkins\workspace\TaskIt.NexusUploader\MRP_TaskIt.NexusUploader\TaskIt.NexusUploader\Types\Messages.csutf-8u
-lC:\Data\Jenkins\workspace\TaskIt.NexusUploader\MRP_TaskIt.NexusUploader\TaskIt.NexusUploader\Types\Result.csutf-8_
-TC:\Users\taskadmin\AppData\Local\Temp\.NETCoreApp,Version=v2.2.AssemblyAttributes.csutf-8§
-›C:\Data\Jenkins\workspace\TaskIt.NexusUploader\MRP_TaskIt.NexusUploader\TaskIt.NexusUploader\obj\Release\netcoreapp2.2\TaskIt.NexusUploader.AssemblyInfo.csutf-8
