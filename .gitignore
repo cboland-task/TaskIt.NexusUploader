@@ -344,3 +344,5 @@ nupkg/
 # Sonar
 *.ruleset
 *.slconfig
+.sonarlint
+.sonarqube
